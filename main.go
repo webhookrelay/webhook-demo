@@ -20,8 +20,10 @@ type ReceivedWebhook struct {
 }
 
 func main() {
+	// preparing HTTP server
 	srv := &http.Server{Addr: Port, Handler: http.DefaultServeMux}
 
+	// all received webhooks will be stored in this variable
 	var webhooks []*ReceivedWebhook
 	mu := &sync.RWMutex{}
 
@@ -35,6 +37,7 @@ func main() {
 		}
 	}()
 
+	// handler to display all received webhooks
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Received webhooks:")
 		mu.RLock()
@@ -44,6 +47,7 @@ func main() {
 		mu.RUnlock()
 	})
 
+	// incomming webhook handler
 	http.HandleFunc("/webhook", func(w http.ResponseWriter, r *http.Request) {
 		bd, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -63,6 +67,7 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 	})
 
+	// starting server
 	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatalf("listen: %s\n", err)
 	}
