@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	// "context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,8 +10,11 @@ import (
 	"time"
 )
 
+// Version - version to show
+var Version = "0.0.14"
+
 // Port - default port to start application on
-var Port = ":8080"
+var Port = ":8090"
 
 // ReceivedWebhook - keeps info about received webhook
 type ReceivedWebhook struct {
@@ -27,18 +30,13 @@ func main() {
 	var webhooks []*ReceivedWebhook
 	mu := &sync.RWMutex{}
 
-	go func() {
-		fmt.Println("Listening on ", Port)
-		fmt.Println("Press enter to shutdown server")
-		fmt.Scanln()
-		log.Println("Shutting down server...")
-		if err := srv.Shutdown(context.Background()); err != nil {
-			log.Fatalf("could not shutdown: %v", err)
-		}
-	}()
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 
 	// handler to display all received webhooks
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Version: %s \n", Version)
 		fmt.Fprintln(w, "Received webhooks:")
 		mu.RLock()
 		for _, v := range webhooks {
@@ -67,6 +65,8 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 	})
 
+	fmt.Println("Version: ", Version)
+	fmt.Println("Listening on ", Port)
 	// starting server
 	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatalf("listen: %s\n", err)
