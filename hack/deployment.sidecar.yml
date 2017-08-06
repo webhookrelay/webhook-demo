@@ -1,0 +1,49 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  name: wd
+  namespace: default
+  labels: 
+      name: "wd"     
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: wd
+      labels:
+        app: wd        
+    spec:
+      containers:                    
+        - image: karolisr/webhook-demo:0.0.15
+          imagePullPolicy: Always            
+          name: wd
+          command: ["/bin/webhook-demo"]
+          ports:
+            - containerPort: 8090       
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8090
+            initialDelaySeconds: 30
+            timeoutSeconds: 10
+          securityContext:
+            privileged: true              
+        # [START webhookrelay_container]
+        - image: webhookrelay/webhookrelayd:0.2.9
+          name: webhookrelayd
+          command: ["/webhookrelayd"]
+          env:                         
+            - name: KEY
+              valueFrom:
+                secretKeyRef:
+                  name: webhookrelay-credentials
+                  key: key                
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: webhookrelay-credentials
+                  key: secret
+            - name: BUCKET
+              value: webhook-demo      
+        # [END webhookrelay_container]

@@ -11,7 +11,7 @@ import (
 )
 
 // Version - version to show
-var Version = "0.0.14"
+var Version = "0.0.15"
 
 // Port - default port to start application on
 var Port = ":8090"
@@ -62,6 +62,8 @@ func main() {
 			Payload:    string(bd),
 		})
 		mu.Unlock()
+
+		fmt.Printf("webhook received, payload: %s \n", string(bd))
 		w.WriteHeader(http.StatusOK)
 	})
 

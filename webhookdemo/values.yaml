@@ -5,7 +5,7 @@ replicaCount: 1
 image:
   repository: karolisr/webhook-demo
   tag: "0.0.8"
-  pullPolicy: IfNotPresent
+  pullPolicy: IfNotPresent 
 service:
   name: webhookdemo
   type: ClusterIP
@@ -18,7 +18,7 @@ keel:
   # trigger type, defaults to events such as pubsub, webhooks
   trigger: poll
   # polling schedule
-  pollSchedule: "@every 3m"
+  pollSchedule: "@every 1m"
   # images to track and update
   images:
     - repository: image.repository

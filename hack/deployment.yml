@@ -4,11 +4,10 @@ kind: Deployment
 metadata: 
   name: wd
   namespace: default
-  # labels: 
-      # name: "wd"
-      # keel.sh/policy: force
-      # keel.sh/policy: all
-      # keel.sh/trigger: poll      
+  labels: 
+      name: "wd"
+      keel.sh/policy: all
+      keel.sh/trigger: poll      
   annotations:
       # keel.sh/pollSchedule: "@every 10m"
 spec:
@@ -18,7 +17,6 @@ spec:
       name: wd
       labels:
         app: wd        
-
     spec:
       containers:                    
         - image: karolisr/webhook-demo:0.0.8
@@ -34,4 +32,4 @@ spec:
             initialDelaySeconds: 30
             timeoutSeconds: 10
           securityContext:
-            privileged: true      
+            privileged: true
