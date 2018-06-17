@@ -2,28 +2,28 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata: 
-  name: wd
+  name: wdm
   namespace: default
   labels: 
-      name: "wd"
-      keel.sh/policy: minor
+      name: wdm
+      keel.sh/policy: force
       keel.sh/trigger: poll      
-      keel.sh/approvals: "1"
+      # keel.sh/approvals: "1"
   annotations:
-      keel.sh/pollSchedule: "@every 10s"
+      keel.sh/pollSchedule: "@every 5s"
       # keel.sh/notify: chan1,chan2
 spec:
   replicas: 1
   template:
     metadata:
-      name: wd
+      name: wdm
       labels:
-        app: wd        
+        app: wdm     
     spec:      
       containers:                    
-        - image: karolisr/webhook-demo:0.0.8
+        - image: karolisr/webhook-demo:alpha   
           imagePullPolicy: Always            
-          name: wd
+          name: wdm
           command: ["/bin/webhook-demo"]
           ports:
             - containerPort: 8090       
@@ -34,4 +34,4 @@ spec:
             initialDelaySeconds: 30
             timeoutSeconds: 10
           securityContext:
-            privileged: true
+            privileged: true         

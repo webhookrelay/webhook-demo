@@ -19,7 +19,10 @@ keel:
   trigger: poll
   # polling schedule
   pollSchedule: "@every 1m"
+  # approvals required to proceed with an update
+  approvals: 0
   # images to track and update
+  
   images:
     - repository: image.repository
       tag: image.tag

@@ -11,7 +11,7 @@ import (
 )
 
 // Version - version to show
-var Version = "0.0.15"
+var Version = "master-6"
 
 // Port - default port to start application on
 var Port = ":8090"
@@ -20,6 +20,7 @@ var Port = ":8090"
 type ReceivedWebhook struct {
 	Payload    string
 	ReceivedAt time.Time
+	Method     string
 }
 
 func main() {
@@ -31,11 +32,14 @@ func main() {
 	mu := &sync.RWMutex{}
 
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("server", "webhook-demo")
 		w.WriteHeader(http.StatusOK)
 	})
 
 	// handler to display all received webhooks
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("server", "webhook-demo")
+
 		fmt.Fprintf(w, "Version: %s \n", Version)
 		fmt.Fprintln(w, "Received webhooks:")
 		mu.RLock()
@@ -60,15 +64,18 @@ func main() {
 		webhooks = append(webhooks, &ReceivedWebhook{
 			ReceivedAt: time.Now(),
 			Payload:    string(bd),
+			Method:     r.Method,
 		})
 		mu.Unlock()
 
-		fmt.Printf("webhook received, payload: %s \n", string(bd))
+		w.Header().Add("server", "webhook-demo")
+
+		fmt.Printf("webhook received, payload: %s, method: %s \n", string(bd), r.Method)
 		w.WriteHeader(http.StatusOK)
 	})
 
 	fmt.Println("Version: ", Version)
-	fmt.Println("Listening on ", Port)
+	fmt.Printf("Receiving webhooks on http://localhost%s/webhook \n", Port)
 	// starting server
 	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatalf("listen: %s\n", err)

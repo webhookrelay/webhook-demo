@@ -1,19 +1,22 @@
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata: 
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
   name: wd
   namespace: default
   labels: 
       name: "wd"
       keel.sh/policy: minor
       keel.sh/trigger: poll      
-      keel.sh/approvals: "1"
+      # keel.sh/approvals: "1"
   annotations:
-      keel.sh/pollSchedule: "@every 10s"
+      keel.sh/pollSchedule: "@every 1m"
       # keel.sh/notify: chan1,chan2
 spec:
   replicas: 1
+  serviceName: "wd"
+  selector:
+    matchLabels:
+      app: wd
   template:
     metadata:
       name: wd
@@ -32,6 +35,4 @@ spec:
               path: /healthz
               port: 8090
             initialDelaySeconds: 30
-            timeoutSeconds: 10
-          securityContext:
-            privileged: true
+            timeoutSeconds: 10              

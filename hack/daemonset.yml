@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: wd-ds
+  namespace: default
+  labels: 
+      name: "wd"
+      keel.sh/policy: minor
+      keel.sh/trigger: poll      
+      # keel.sh/approvals: "1"
+  annotations:
+      keel.sh/pollSchedule: "@every 1m"
+      # keel.sh/notify: chan1,chan2
+spec:
+  selector:
+    matchLabels:
+      name: wd-ds
+  template:
+    metadata:
+      labels:
+        name: wd-ds
+    spec:      
+      containers:
+      - name: wd-ds
+        image: karolisr/webhook-demo:0.0.8
+        imagePullPolicy: Always            
+        name: wd
+        command: ["/bin/webhook-demo"]
+        ports:
+          - containerPort: 8090       
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8090
+          initialDelaySeconds: 30
+          timeoutSeconds: 10
+        securityContext:
+          privileged: true         
