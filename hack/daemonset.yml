@@ -4,13 +4,12 @@ metadata:
   name: wd-ds
   namespace: default
   labels: 
-      name: "wd"
-      keel.sh/policy: minor
-      keel.sh/trigger: poll      
-      # keel.sh/approvals: "1"
+      name: "wd"      
   annotations:
       keel.sh/pollSchedule: "@every 1m"
-      # keel.sh/notify: chan1,chan2
+      keel.sh/policy: "glob:foo-*"
+      keel.sh/trigger: poll      
+      keel.sh/approvals: "1"
 spec:
   selector:
     matchLabels:
@@ -24,7 +23,6 @@ spec:
       - name: wd-ds
         image: karolisr/webhook-demo:0.0.8
         imagePullPolicy: Always            
-        name: wd
         command: ["/bin/webhook-demo"]
         ports:
           - containerPort: 8090       
