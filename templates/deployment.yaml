@@ -1,0 +1,36 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  name: wd
+  namespace: default
+  labels: 
+      name: "wd"
+      keel.sh/policy: "{{ .policy | default "minor" }}"
+      keel.sh/trigger: poll
+      keel.sh/approvals: "{{ .approvals | "1" }}"
+  annotations:
+      keel.sh/pollSchedule: "@every 10s"
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: wd
+      labels:
+        app: wd        
+    spec:      
+      containers:                    
+        - image: karolisr/webhook-demo:{{ .tag | default "0.0.8" }}
+          imagePullPolicy: Always            
+          name: wd
+          command: ["/bin/webhook-demo"]
+          ports:
+            - containerPort: 8090       
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8090
+            initialDelaySeconds: 30
+            timeoutSeconds: 10
+          securityContext:
+            privileged: true
