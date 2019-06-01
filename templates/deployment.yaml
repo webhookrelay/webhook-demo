@@ -8,7 +8,7 @@ metadata:
       name: "wd"
       keel.sh/policy: "{{ .policy | default "minor" }}"
       keel.sh/trigger: poll
-      keel.sh/approvals: "{{ .approvals | "1" }}"
+      keel.sh/approvals: "{{ .approvals | default "1" }}"
   annotations:
       keel.sh/pollSchedule: "@every 10s"
 spec:
