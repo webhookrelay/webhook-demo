@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -49,7 +48,7 @@ func main() {
 		mu.RUnlock()
 	})
 
-	// incomming webhook handler
+	// incoming webhook handler
 	http.HandleFunc("/webhook", func(w http.ResponseWriter, r *http.Request) {
 		bd, err := ioutil.ReadAll(r.Body)
 		if err != nil {
